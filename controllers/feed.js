@@ -1,8 +1,19 @@
 exports.getPosts = (req, res, next) => {
   // * res.json allows to return a response with json data, right headers and many more.
-  res
-    .status(200)
-    .json({ posts: [{ title: 'First Post', content: 'Hello World!' }] });
+  res.status(200).json({
+    posts: [
+      {
+        _id: '1',
+        title: 'First Post',
+        content: 'Hello World!',
+        imageUrl: 'images/20.jpg',
+        creator: {
+          name: 'Gio',
+        },
+        createdAt: new Date(),
+      },
+    ],
+  });
 };
 
 exports.createPost = (req, res, next) => {
