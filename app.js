@@ -1,3 +1,5 @@
+const path = require('path');
+
 const express = require('express');
 const mongoose = require('mongoose');
 
@@ -10,6 +12,7 @@ const MONGODB_URI =
 
 // app.use(bodyParser.urlencoded()) // * x-www-form-urlencoded <form method="POST">
 app.use(express.json()); // * application/json
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.use((req, res, next) => {
   // * set all urls
@@ -24,6 +27,12 @@ app.use((req, res, next) => {
 });
 
 app.use('/feed', feedRoutes);
+
+app.use((error, req, res, next) => {
+  console.log(error);
+  const { statusCode, message } = error || 500;
+  res.status(statusCode).json({ message });
+});
 
 mongoose
   .connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
