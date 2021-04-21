@@ -1,9 +1,12 @@
 const express = require('express');
-const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
 const feedRoutes = require('./routes/feed');
 
 const app = express();
+
+const MONGODB_URI =
+  'mongodb+srv://Giovanni:npsssYf5cEvNEhRb@cluster0.dxeqa.mongodb.net/blog?retryWrites=true&w=majority';
 
 // app.use(bodyParser.urlencoded()) // * x-www-form-urlencoded <form method="POST">
 app.use(express.json()); // * application/json
@@ -22,4 +25,9 @@ app.use((req, res, next) => {
 
 app.use('/feed', feedRoutes);
 
-app.listen(8080);
+mongoose
+  .connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    app.listen(8080);
+  })
+  .catch(err => console.log(err));
