@@ -1,5 +1,7 @@
 const { validationResult } = require('express-validator');
 
+const Post = require('../models/post');
+
 exports.getPosts = (req, res, next) => {
   // * res.json allows to return a response with json data, right headers and many more.
   res.status(200).json({
@@ -28,16 +30,23 @@ exports.createPost = (req, res, next) => {
     });
   }
   const { title, content } = req.body;
-  // * creates post in db
-  // * 200 vs 201; 200 - only success; 201 - resource created successfully.
-  res.status(201).json({
-    message: 'Post created successful!',
-    post: {
-      _id: new Date().toISOString(),
-      title,
-      content,
-      creator: { name: 'Gio' },
-      createdAt: new Date(),
-    },
+  const post = new Post({
+    title,
+    image: 'images/20.jpg',
+    content,
+    creator: { name: 'Gio' },
   });
+
+  post
+    .save()
+    .then(result => {
+      console.log(result);
+      res.status(201).json({
+        message: 'Post created successfully',
+        post: result,
+      });
+    })
+    .catch(err => {
+      console.log(err);
+    });
 };

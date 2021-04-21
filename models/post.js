@@ -2,23 +2,23 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const postSchema = newSchema(
+const postSchema = new Schema(
   {
     title: {
       type: String,
-      require: true,
+      required: true,
     },
     image: {
       type: String,
-      require: true,
+      required: true,
     },
     content: {
       type: String,
-      require: true,
+      required: true,
     },
     creator: {
       type: Object,
-      require: true,
+      required: true,
     },
   },
   { timestamps: true }
