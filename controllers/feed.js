@@ -23,11 +23,24 @@ const err500 = (err, next) => {
 };
 
 exports.getPosts = (req, res, next) => {
+  const { page } = req.query || 1;
+  const perPage = 2;
+  let totalItems;
   Post.find()
-    .then(posts => {
-      res.status(200).json({ message: 'Fetched posts successfully', posts });
+    .countDocuments()
+    .then(total => {
+      totalItems = total;
+      return Post.find()
+        .skip((page - 1) * perPage)
+        .limit(perPage);
     })
+    .then(posts =>
+      res
+        .status(200)
+        .json({ message: 'Fetched posts successfully', posts, totalItems })
+    )
     .catch(err => err500(err, next));
+
   // * res.json allows to return a response with json data, right headers and many more.
 };
 
@@ -85,11 +98,6 @@ exports.updatePost = (req, res, next) => {
 
   const { title, content } = req.body;
   let { image } = req.body;
-  console.log('START');
-  console.log(req.file);
-  console.log(typeof image);
-  console.log(req.body);
-  console.log('END');
   if (req.file) {
     image = req.file.path.replace('\\', '/');
   }
