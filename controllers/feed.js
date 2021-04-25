@@ -65,7 +65,7 @@ exports.getPost = (req, res, next) => {
   const { postId } = req.params;
   Post.findById(postId)
     .then(post => {
-      error.error400(post);
+      error.error404(post);
       res.status(200).json({ message: 'Post fetched.', post });
     })
     .catch(err => error.error500(err, next));
@@ -93,7 +93,7 @@ exports.updatePost = (req, res, next) => {
 
   Post.findById(postId)
     .then(post => {
-      error.error400(post);
+      error.error404(post);
       if (image !== post.image) {
         clearImage(post.image);
       }
@@ -113,7 +113,7 @@ exports.deletePost = (req, res, next) => {
   Post.findById(postId)
     .then(post => {
       //  * checks logged in user
-      error.error400(post);
+      error.error404(post);
       clearImage(post.image);
       return Post.findByIdAndDelete(postId);
     })
