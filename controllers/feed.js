@@ -116,6 +116,21 @@ exports.updatePost = (req, res, next) => {
     .catch(err => err500(err, next));
 };
 
+exports.deletePost = (req, res, next) => {
+  const { postId } = req.params;
+  Post.findById(postId)
+    .then(post => {
+      //  * checks logged in user
+      err400(post);
+      clearImage(post.image);
+      return Post.findByIdAndDelete(postId);
+    })
+    .then(() => {
+      res.status(200).json({ message: 'Deleted Post!' });
+    })
+    .catch(err => err500(err, next));
+};
+
 const clearImage = filePath => {
   filePath = path.join(__dirname, '..', filePath);
   fs.unlink(filePath, err => console.log(err));
