@@ -105,6 +105,13 @@ exports.updatePost = (req, res, next) => {
   Post.findById(postId)
     .then(post => {
       error.error404(post);
+      // TODO refactor
+      if (post.creator.toString() !== req.userId) {
+        const error = new Error('Not Authorized');
+        // * 403 Authorization issues
+        error.statusCode = 403;
+        throw error;
+      }
       if (image !== post.image) {
         clearImage(post.image);
       }
@@ -125,6 +132,13 @@ exports.deletePost = (req, res, next) => {
     .then(post => {
       //  * checks logged in user
       error.error404(post);
+      // TODO refactor
+      if (post.creator.toString() !== req.userId) {
+        const error = new Error('Not Authorized');
+        // * 403 Authorization issues
+        error.statusCode = 403;
+        throw error;
+      }
       clearImage(post.image);
       return Post.findByIdAndDelete(postId);
     })
