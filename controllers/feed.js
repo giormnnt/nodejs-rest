@@ -4,23 +4,7 @@ const path = require('path');
 const { validationResult } = require('express-validator');
 
 const Post = require('../models/post');
-
-const err400 = post => {
-  if (!post) {
-    const error = new Error('Could not find post');
-    // * 404 - not found
-    error.statusCode = 404;
-    throw error;
-  }
-};
-
-const err500 = (err, next) => {
-  if (!err.statusCode) {
-    // * 500 -server side error
-    err.statusCode = 500;
-  }
-  next(err);
-};
+const error = require('../util/error');
 
 exports.getPosts = (req, res, next) => {
   const { page } = req.query || 1;
@@ -39,7 +23,7 @@ exports.getPosts = (req, res, next) => {
         .status(200)
         .json({ message: 'Fetched posts successfully', posts, totalItems })
     )
-    .catch(err => err500(err, next));
+    .catch(err => error.error500(err, next));
 
   // * res.json allows to return a response with json data, right headers and many more.
 };
@@ -68,23 +52,23 @@ exports.createPost = (req, res, next) => {
 
   post
     .save()
-    .then(result => {
+    .then(post => {
       res.status(201).json({
         message: 'Post created successfully',
-        post: result,
+        post,
       });
     })
-    .catch(err => err500(err, next));
+    .catch(err => error.error500(err, next));
 };
 
 exports.getPost = (req, res, next) => {
   const { postId } = req.params;
   Post.findById(postId)
     .then(post => {
-      err400(post);
+      error.error400(post);
       res.status(200).json({ message: 'Post fetched.', post });
     })
-    .catch(err => err500(err, next));
+    .catch(err => error.error500(err, next));
 };
 
 exports.updatePost = (req, res, next) => {
@@ -109,7 +93,7 @@ exports.updatePost = (req, res, next) => {
 
   Post.findById(postId)
     .then(post => {
-      err400(post);
+      error.error400(post);
       if (image !== post.image) {
         clearImage(post.image);
       }
@@ -121,7 +105,7 @@ exports.updatePost = (req, res, next) => {
     .then(result => {
       res.status(200).json({ message: 'Post updated', post: result });
     })
-    .catch(err => err500(err, next));
+    .catch(err => error.error500(err, next));
 };
 
 exports.deletePost = (req, res, next) => {
@@ -129,14 +113,14 @@ exports.deletePost = (req, res, next) => {
   Post.findById(postId)
     .then(post => {
       //  * checks logged in user
-      err400(post);
+      error.error400(post);
       clearImage(post.image);
       return Post.findByIdAndDelete(postId);
     })
     .then(() => {
       res.status(200).json({ message: 'Deleted Post!' });
     })
-    .catch(err => err500(err, next));
+    .catch(err => error.error500(err, next));
 };
 
 const clearImage = filePath => {
