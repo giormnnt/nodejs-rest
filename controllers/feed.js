@@ -65,7 +65,7 @@ exports.createPost = async (req, res, next) => {
 exports.getPost = async (req, res, next) => {
   const { postId } = req.params;
   try {
-    const post = await Post.findById(postId);
+    const post = await Post.findById(postId).populate('creator');
     error.error404(post);
     res.status(200).json({ post });
   } catch (err) {
