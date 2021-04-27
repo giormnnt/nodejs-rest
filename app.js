@@ -58,9 +58,14 @@ app.use((error, req, res, next) => {
   res.status(statusCode).json({ message, data });
 });
 
-mongoose
-  .connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => {
+(async () => {
+  try {
+    await mongoose.connect(MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
     app.listen(8080);
-  })
-  .catch(err => console.log(err));
+  } catch (err) {
+    console.log(err);
+  }
+})();

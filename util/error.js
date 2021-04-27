@@ -18,6 +18,15 @@ exports.error404 = (post, message = 'Could not find post.') => {
   }
 };
 
+exports.error403 = (post, req, message) => {
+  if (post.creator.toString() !== req.userId) {
+    const error = new Error(message);
+    // * 403 Authorization issues
+    error.statusCode = 403;
+    throw error;
+  }
+};
+
 exports.error500 = (err, next) => {
   if (!err.statusCode) {
     // * 500 -server side error
