@@ -3,6 +3,7 @@ const path = require('path');
 
 const { validationResult } = require('express-validator');
 
+const io = require('../socket');
 const Post = require('../models/post');
 const User = require('../models/user');
 const error = require('../util/error');
@@ -49,6 +50,8 @@ exports.createPost = async (req, res, next) => {
     const user = await User.findById(req.userId);
     user.posts.push(post);
     await user.save();
+    // * emit sends a message to all connected users
+    io.getIO().emit('posts', { action: 'create', post });
     res.status(201).json({
       message: 'Post created successfully',
       post,
