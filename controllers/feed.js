@@ -51,7 +51,10 @@ exports.createPost = async (req, res, next) => {
     user.posts.push(post);
     await user.save();
     // * emit sends a message to all connected users
-    io.getIO().emit('posts', { action: 'create', post });
+    io.getIO().emit('posts', {
+      action: 'create',
+      post: { ...post._doc, creator: { _id: req.userId, name: user.name } },
+    });
     res.status(201).json({
       message: 'Post created successfully',
       post,
@@ -93,7 +96,7 @@ exports.updatePost = async (req, res, next) => {
     throw error;
   }
   try {
-    const post = await Post.findById(postId);
+    const post = await Post.findById(postId).populate('creator');
     error.error404(post);
     error.error403(post, req, 'Not Authorized');
 
@@ -105,6 +108,10 @@ exports.updatePost = async (req, res, next) => {
     post.image = image;
 
     const result = await post.save();
+    io.getIO().emit('posts', {
+      action: 'update',
+      post: result,
+    });
     res.status(200).json({ post: result });
   } catch (err) {
     error.error500(err, next);

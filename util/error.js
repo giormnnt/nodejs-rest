@@ -19,7 +19,7 @@ exports.error404 = (post, message = 'Could not find post.') => {
 };
 
 exports.error403 = (post, req, message) => {
-  if (post.creator.toString() !== req.userId) {
+  if (post.creator._id.toString() !== req.userId) {
     const error = new Error(message);
     // * 403 Authorization issues
     error.statusCode = 403;
