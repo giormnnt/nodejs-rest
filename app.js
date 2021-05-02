@@ -4,6 +4,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
+const helmet = require('helmet');
+const compression = require('compression');
 
 const feedRoutes = require('./routes/feed');
 const authRoutes = require('./routes/auth');
@@ -29,8 +31,7 @@ const fileFilter = (req, file, cb) => {
   return cb(null, false);
 };
 
-const MONGODB_URI =
-  'mongodb+srv://Giovanni:npsssYf5cEvNEhRb@cluster0.dxeqa.mongodb.net/blog?retryWrites=true&w=majority';
+const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.dxeqa.mongodb.net/${process.env.MONGO_DEFAULT_DATABASE}?retryWrites=true&w=majority`;
 
 // app.use(bodyParser.urlencoded()) // * x-www-form-urlencoded <form method="POST">
 app.use(express.json()); // * application/json
@@ -51,6 +52,9 @@ app.use((req, res, next) => {
 
 app.use('/feed', feedRoutes);
 app.use('/auth', authRoutes);
+
+app.use(helmet());
+app.use(compression());
 
 app.use((error, req, res, next) => {
   console.log(error);
