@@ -4,7 +4,7 @@ const error = require('../util/error');
 
 module.exports = (req, res, next) => {
   const authHeader = req.get('Authorization');
-  if (!authHeader) error.error401(token, 'Not authenticated.');
+  if (!authHeader) error.error401(authHeader, 'Not authenticated.');
   const token = authHeader.replace('Bearer ', '');
   let decodedToken;
   try {
